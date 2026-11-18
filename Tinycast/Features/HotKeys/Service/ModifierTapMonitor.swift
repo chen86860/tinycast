@@ -254,6 +254,11 @@ final class ModifierTapMonitor: HealthCheckable {
 
     private func installTapIfNeeded() {
         guard tapPort == nil else { return }
+        // Untrusted, tapCreate still succeeds but the tap stays deaf, even after trust arrives.
+        guard Permissions.isAccessibilityTrusted() else {
+            needsAccessibility = true
+            return
+        }
         let mask: CGEventMask =
             (1 << CGEventType.keyDown.rawValue)
             | (1 << CGEventType.flagsChanged.rawValue)
